@@ -13,7 +13,7 @@
         "Arguments": {
           "StateMachineArn": "arn:aws:states:ap-south-1:058264433315:stateMachine:Child-StateMachine",
           "Input": {
-            "StatePayload": "Test Pipeline Webhook1",
+            "StatePayload": "Test env webhook",
             "AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID": "{% $states.context.Execution.Id %}"
           }
         },
