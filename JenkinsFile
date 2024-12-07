@@ -4,15 +4,8 @@ pipeline {
         AWS_REGION = 'ap-south-1' // Set your desired AWS region
         STATE_MACHINE_ARN = 'arn:aws:states:ap-south-1:058264433315:stateMachine:Parent-StateMahine'
         DEFINITION_FILE = 'definition.json' // Path to your state machine definition file
-        GIT_REPO = 'git@github.com:satwikpadhy/stepfunction-ci-cd.git'
     }
     stages {
-        stage('Checkout Code') {
-            steps {
-                // Clone the repository containing the Step Function definition
-                git branch: 'main', url: env.GIT_REPO
-            }
-        }
         stage('Validate Step Function Definition') {
             steps {
                 script {
