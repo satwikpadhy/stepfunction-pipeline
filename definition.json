@@ -1,0 +1,26 @@
+{
+    "QueryLanguage": "JSONata",
+    "Comment": "A description of my state machine",
+    "StartAt": "Pass",
+    "States": {
+      "Pass": {
+        "Type": "Pass",
+        "Next": "Step Functions StartExecution"
+      },
+      "Step Functions StartExecution": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::states:startExecution.sync:2",
+        "Arguments": {
+          "StateMachineArn": "arn:aws:states:ap-south-1:058264433315:stateMachine:Child-StateMachine",
+          "Input": {
+            "StatePayload": "Test Pipeline Webhook1",
+            "AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID": "{% $states.context.Execution.Id %}"
+          }
+        },
+        "Next": "Success"
+      },
+      "Success": {
+        "Type": "Succeed"
+      }
+    }
+  }

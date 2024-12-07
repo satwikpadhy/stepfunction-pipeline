@@ -2,9 +2,9 @@ pipeline {
     agent any
     parameters {
         string(name: 'AWS_REGION', defaultValue: 'ap-south-1', description: 'AWS Region for the Step Function')
-        string(name: 'STATE_MACHINE_ARN', defaultValue: '', description: 'ARN of the Step Function to update')
+        string(name: 'STATE_MACHINE_ARN', defaultValue: 'arn:aws:states:ap-south-1:058264433315:stateMachine:Parent-StateMahine', description: 'ARN of the Step Function to update')
         string(name: 'DEFINITION_FILE', defaultValue: 'definition.json', description: 'Path to the Step Function definition file')
-        string(name: 'GIT_REPO', defaultValue: '', description: 'Git Repo URL')
+        string(name: 'GIT_REPO', defaultValue: 'git@github.com:satwikpadhy/stepfunction-pipeline.git', description: 'Git Repo URL')
     }
     stages {
         stage('Checkout Code') {
