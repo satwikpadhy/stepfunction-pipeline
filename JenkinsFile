@@ -26,8 +26,7 @@ pipeline {
         }
         stage('Update Step Function') {
             steps {
-                withAWS(region: "${AWS_REGION}") {
-                    script {
+                script {
                         // Update the Step Function with the new definition
                         sh """
                         aws stepfunctions update-state-machine \
@@ -35,7 +34,7 @@ pipeline {
                             --definition file://${DEFINITION_FILE} \
                             --region ${AWS_REGION}
                         """
-                    }
+                    
                 }
             }
         }
