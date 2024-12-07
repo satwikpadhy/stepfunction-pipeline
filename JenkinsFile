@@ -1,23 +1,23 @@
 pipeline {
     agent any
-    parameters {
-        string(name: 'AWS_REGION', defaultValue: 'ap-south-1', description: 'AWS Region for the Step Function')
-        string(name: 'STATE_MACHINE_ARN', defaultValue: 'arn:aws:states:ap-south-1:058264433315:stateMachine:Parent-StateMahine', description: 'ARN of the Step Function to update')
-        string(name: 'DEFINITION_FILE', defaultValue: 'definition.json', description: 'Path to the Step Function definition file')
-        string(name: 'GIT_REPO', defaultValue: 'git@github.com:satwikpadhy/stepfunction-pipeline.git', description: 'Git Repo URL')
+    environment {
+        AWS_REGION = 'ap-south-1' // Set your desired AWS region
+        STATE_MACHINE_ARN = 'arn:aws:states:ap-south-1:058264433315:stateMachine:Parent-StateMahine'
+        DEFINITION_FILE = 'definition.json' // Path to your state machine definition file
+        GIT_REPO = 'git@github.com:satwikpadhy/stepfunction-ci-cd.git'
     }
     stages {
         stage('Checkout Code') {
             steps {
                 // Clone the repository containing the Step Function definition
-                git branch: 'main', url: params.GIT_REPO
+                git branch: 'main', url: env.GIT_REPO
             }
         }
         stage('Validate Step Function Definition') {
             steps {
                 script {
                     // Optionally validate the definition using jq or a custom script
-                    def definition = readFile(params.DEFINITION_FILE)
+                    def definition = readFile(env.DEFINITION_FILE)
                     if (!definition) {
                         error "State machine definition file is empty or missing!"
                     }
@@ -26,14 +26,16 @@ pipeline {
         }
         stage('Update Step Function') {
             steps {
-                script {
-                    // Update the Step Function with the new definition
-                    sh """
-                    aws stepfunctions update-state-machine \
-                        --state-machine-arn ${params.STATE_MACHINE_ARN} \
-                        --definition file://${params.DEFINITION_FILE} \
-                        --region ${params.AWS_REGION}
-                    """
+                withAWS(region: "${AWS_REGION}") {
+                    script {
+                        // Update the Step Function with the new definition
+                        sh """
+                        aws stepfunctions update-state-machine \
+                            --state-machine-arn ${STATE_MACHINE_ARN} \
+                            --definition file://${DEFINITION_FILE} \
+                            --region ${AWS_REGION}
+                        """
+                    }
                 }
             }
         }
