@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+    parameters {
+        string(name: 'AWS_REGION', defaultValue: 'ap-south-1', description: 'AWS Region for the Step Function')
+        string(name: 'STATE_MACHINE_ARN', defaultValue: '', description: 'ARN of the Step Function to update')
+        string(name: 'DEFINITION_FILE', defaultValue: 'definition.json', description: 'Path to the Step Function definition file')
+        string(name: 'GIT_REPO', defaultValue: '', description: 'Git Repo URL')
+    }
+    stages {
+        stage('Checkout Code') {
+            steps {
+                // Clone the repository containing the Step Function definition
+                git branch: 'main', url: params.GIT_REPO
+            }
+        }
+        stage('Validate Step Function Definition') {
+            steps {
+                script {
+                    // Optionally validate the definition using jq or a custom script
+                    def definition = readFile(params.DEFINITION_FILE)
+                    if (!definition) {
+                        error "State machine definition file is empty or missing!"
+                    }
+                }
+            }
+        }
+        stage('Update Step Function') {
+            steps {
+                script {
+                    // Update the Step Function with the new definition
+                    sh """
+                    aws stepfunctions update-state-machine \
+                        --state-machine-arn ${params.STATE_MACHINE_ARN} \
+                        --definition file://${params.DEFINITION_FILE} \
+                        --region ${params.AWS_REGION}
+                    """
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Step Function updated successfully!'
+        }
+        failure {
+            echo 'Failed to update Step Function.'
+        }
+    }
+}
